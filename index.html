@@ -3,73 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Math Nexus | Level Up</title>
+    <title>Nexus Math AI | Competitive Edition</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div id="app">
-        <!-- Сетка профиля -->
-        <header class="top-bar">
-            <div class="user-info">
-                <span id="user-level">LVL 1</span>
-                <div class="xp-bar-bg"><div id="xp-bar-fill"></div></div>
-                <span id="user-coins">💰 0</span>
-            </div>
-            <button onclick="showSection('game')">Мини-игра</button>
-            <button onclick="showSection('shop')">Магазин</button>
-            <button onclick="showSection('menu')">Главная</button>
-        </header>
-
-        <!-- Меню выбора -->
-        <section id="section-menu" class="screen">
-            <h1>ВЫБЕРИ ИСПЫТАНИЕ</h1>
-            <div class="setup-box">
-                <select id="select-topic">
-                    <option value="algebra">Алгебра</option>
-                    <option value="geometry">Геометрия</option>
-                    <option value="trig">Тригонометрия</option>
-                </select>
-                <div class="diff-btns">
-                    <button class="diff-btn active" data-diff="easy">Легко</button>
-                    <button class="diff-btn" data-diff="hard">Сложно</button>
+    <div class="app-container">
+        <!-- Статус-бар (Профиль) -->
+        <div class="top-nav">
+            <div class="profile-card">
+                <div class="avatar">🎓</div>
+                <div class="stats">
+                    <div class="user-name">STUDENT_NEXUS</div>
+                    <div class="xp-container">
+                        <div id="xp-fill" style="width: 30%"></div>
+                    </div>
                 </div>
-                <button class="start-btn" onclick="startQuiz()">НАЧАТЬ ТЕСТ (10 ЗАДАЧ)</button>
+                <div class="level-badge">LVL <span id="lvl">1</span></div>
             </div>
-        </section>
+            <div class="currency">💰 <span id="coins">0</span></div>
+        </div>
 
-        <!-- Экран теста -->
-        <section id="section-quiz" class="screen hidden">
-            <div class="quiz-header">
-                <span id="q-progress">Вопрос 1/10</span>
-                <span id="q-timer">00:30</span>
+        <!-- Основной контент -->
+        <div id="screen-menu" class="screen">
+            <h1 class="glitch">NEXUS MATH</h1>
+            <div class="config-grid">
+                <div class="config-item">
+                    <label>Предмет</label>
+                    <select id="topic-select">
+                        <option value="algebra">Алгебра (Уравнения)</option>
+                        <option value="geometry">Геометрия (Площади)</option>
+                        <option value="trig">Тригонометрия (Функции)</option>
+                    </select>
+                </div>
+                <div class="config-item">
+                    <label>Сложность</label>
+                    <div class="diff-toggle">
+                        <button class="d-btn active" data-v="easy">Новичок</button>
+                        <button class="d-btn" data-v="hard">Профи</button>
+                    </div>
+                </div>
             </div>
-            <h2 id="q-text">Пример задачи?</h2>
-            <div class="options-grid">
-                <button class="opt" onclick="checkAnswer(0)">A) <span id="opt0"></span></button>
-                <button class="opt" onclick="checkAnswer(1)">B) <span id="opt1"></span></button>
-                <button class="opt" onclick="checkAnswer(2)">C) <span id="opt2"></span></button>
-                <button class="opt" onclick="checkAnswer(3)">D) <span id="opt3"></span></button>
-            </div>
-        </section>
+            <button class="main-start-btn" onclick="startEngine()">ЗАПУСК ТЕСТА</button>
+        </div>
 
-        <!-- Мини-игра -->
-        <section id="section-game" class="screen hidden">
-            <h2>КЛИКЕР ЭНЕРГИИ</h2>
-            <p>Кликай на сферу, чтобы получить доп. монеты!</p>
-            <div id="sphere" onclick="clickSphere()"></div>
-        </section>
-
-        <!-- Магазин -->
-        <section id="section-shop" class="screen hidden">
-            <h2>МАГАЗИН БОНУСОВ</h2>
-            <div class="shop-item">
-                <span>Золотая тема (500 💰)</span>
-                <button onclick="buyItem('gold')">Купить</button>
+        <!-- Экран Теста -->
+        <div id="screen-quiz" class="screen hidden">
+            <div class="quiz-status">
+                <div id="q-num">Вопрос 1/10</div>
+                <div id="timer-bar"></div>
             </div>
-        </section>
+            <div class="question-box">
+                <div id="math-display"></div>
+            </div>
+            <div class="answers-grid" id="options">
+                <!-- Кнопки генерируются скриптом -->
+            </div>
+        </div>
     </div>
     <script src="script.js"></script>
 </body>
 </html>
-
