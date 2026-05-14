@@ -3,156 +3,217 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus Math AI | Ultra Edition</title>
+    <title>Nexus Math | IQ Overdrive</title>
     <style>
-        /* ВЕСЬ ДИЗАЙН ТУТ */
-        :root { --p: #7c3aed; --bg: #050505; --card: #121214; --text: #fafafa; }
-        body { margin: 0; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; display: flex; justify-content: center; min-height: 100vh; }
-        .app { width: 100%; max-width: 450px; padding: 20px; display: flex; flex-direction: column; }
+        :root { --p: #a855f7; --bg: #030303; --card: #0f1012; --text: #f8fafc; --red: #ef4444; --green: #22c55e; }
+        body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; display: flex; justify-content: center; }
+        .app { width: 100%; max-width: 450px; padding: 15px; display: flex; flex-direction: column; min-height: 100vh; }
         
-        .header { display: flex; justify-content: space-between; align-items: center; background: var(--card); padding: 15px; border-radius: 16px; border: 1px solid #222; margin-bottom: 20px; }
-        .xp-bar { width: 100px; height: 8px; background: #222; border-radius: 4px; overflow: hidden; margin-top: 5px; }
-        #xp-fill { height: 100%; background: var(--p); width: 0%; transition: 0.5s; }
+        /* Стили Профиля (K/D) */
+        .profile-header { background: var(--card); border: 1px solid #1e293b; border-radius: 20px; padding: 20px; margin-bottom: 15px; }
+        .stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; text-align: center; margin-top: 15px; border-top: 1px solid #1e293b; padding-top: 15px; }
+        .stat-val { font-size: 18px; font-weight: 800; color: var(--p); }
+        .stat-label { font-size: 10px; color: #64748b; text-transform: uppercase; }
         
-        .screen { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 20px; }
-        .hidden { display: none; }
-        
-        h1 { font-size: 32px; text-align: center; color: var(--p); text-shadow: 0 0 20px rgba(124, 58, 237, 0.3); }
-        .box { background: var(--card); border: 1px solid #222; padding: 20px; border-radius: 20px; }
-        
-        select, .btn { width: 100%; padding: 15px; border-radius: 12px; border: none; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; box-sizing: border-box; }
-        select { background: #1a1a1d; color: white; margin-bottom: 15px; border: 1px solid #333; }
-        
-        .btn { background: var(--p); color: white; margin-bottom: 10px; }
-        .btn:active { transform: scale(0.98); }
-        .diff-row { display: flex; gap: 10px; margin-bottom: 15px; }
-        .d-btn { flex: 1; background: #1a1a1d; color: #666; border: 1px solid #333; padding: 10px; border-radius: 8px; }
-        .d-btn.active { background: var(--p); color: white; border-color: var(--p); }
+        .rank-badge { background: linear-gradient(45deg, var(--p), #6366f1); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .xp-container { width: 100%; height: 6px; background: #1e293b; border-radius: 3px; margin: 10px 0; overflow: hidden; }
+        #xp-fill { height: 100%; background: var(--p); width: 0%; transition: 1s cubic-bezier(0.4, 0, 0.2, 1); }
 
-        .q-box { min-height: 120px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; text-align: center; }
-        .opt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .opt { background: #1a1a1d; border: 1px solid #333; color: white; padding: 20px; border-radius: 12px; cursor: pointer; }
-        .opt.correct { background: #166534; border-color: #22c55e; }
-        .opt.wrong { background: #991b1b; border-color: #ef4444; }
+        /* Игровые экраны */
+        .screen { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 20px; }
+        .hidden { display: none !important; }
+        .box { background: var(--card); border: 1px solid #1e293b; padding: 25px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        
+        .btn { width: 100%; padding: 18px; border-radius: 16px; border: none; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .btn-main { background: var(--p); color: white; box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4); }
+        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(168, 85, 247, 0.6); }
+
+        .q-display { font-size: 36px; font-weight: 900; text-align: center; letter-spacing: -1px; min-height: 100px; display: flex; align-items: center; justify-content: center; }
+        .opt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .opt-btn { background: #1e293b; border: 1px solid #334155; color: white; padding: 20px; border-radius: 16px; font-size: 18px; font-weight: 600; cursor: pointer; }
+        .opt-btn.correct { background: var(--green); border-color: var(--green); }
+        .opt-btn.wrong { background: var(--red); border-color: var(--red); }
+        
+        h2 { text-align: center; margin: 0; font-size: 28px; }
+        .topic-tag { font-size: 12px; color: var(--p); text-align: center; font-weight: bold; margin-bottom: -15px; }
     </style>
 </head>
 <body>
     <div class="app">
-        <div class="header">
-            <div>
-                <div style="font-weight: bold;">LVL <span id="lvl">1</span></div>
-                <div class="xp-bar"><div id="xp-fill"></div></div>
-            </div>
-            <div style="font-size: 20px;">💰 <span id="coins">0</span></div>
-        </div>
-
-        <!-- ГЛАВНОЕ МЕНЮ -->
-        <div id="m-screen" class="screen">
-            <h1>NEXUS MATH</h1>
-            <div class="box">
-                <label style="display:block; margin-bottom:10px; color:#888;">Выберите тему:</label>
-                <select id="topic">
-                    <option value="algebra">Алгебра</option>
-                    <option value="geometry">Геометрия</option>
-                    <option value="trig">Тригонометрия</option>
-                </select>
-                <div class="diff-row">
-                    <button class="d-btn active" id="d-easy" onclick="setDiff('easy')">Легко</button>
-                    <button class="d-btn" id="d-hard" onclick="setDiff('hard')">Сложно</button>
+        <!-- СЕКЦИЯ ПРОФИЛЯ -->
+        <div class="profile-header">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <span class="rank-badge" id="rank-name">НОВИЧОК</span>
+                    <div style="font-size: 14px; margin-top: 5px; font-weight: bold;">LVL <span id="lvl">1</span></div>
                 </div>
-                <button class="btn" style="background:#fff; color:#000;" onclick="start()">НАЧАТЬ ТЕСТ</button>
+                <div style="font-size: 22px;">💰 <span id="coins">0</span></div>
+            </div>
+            <div class="xp-container"><div id="xp-fill"></div></div>
+            
+            <div class="stats-row">
+                <div><div class="stat-val" id="stat-k">0</div><div class="stat-label">Верно</div></div>
+                <div><div class="stat-val" id="stat-kd">0.0</div><div class="stat-label">K/D (IQ)</div></div>
+                <div><div class="stat-val" id="stat-d">0</div><div class="stat-label">Ошибки</div></div>
             </div>
         </div>
 
-        <!-- ТЕСТ -->
-        <div id="q-screen" class="screen hidden">
-            <div style="text-align:center; color:#888;" id="q-count">Вопрос 1/10</div>
-            <div class="box q-box" id="q-text">?</div>
-            <div class="opt-grid" id="options"></div>
+        <!-- МЕНЮ -->
+        <div id="m-screen" class="screen">
+            <h2>NEXUS MATH</h2>
+            <div class="box">
+                <select id="topic-sel" style="width:100%; padding:15px; border-radius:12px; background:#1e293b; color:white; border:none; margin-bottom:15px;">
+                    <option value="algebra">Алгебра: Уровни 1-3</option>
+                    <option value="geometry">Геометрия: Фигуры</option>
+                    <option value="trig">Тригонометрия: ZEN</option>
+                </select>
+                <button class="btn btn-main" onclick="startSession()">В БОЙ</button>
+            </div>
+        </div>
+
+        <!-- ИГРОВОЙ ЭКРАН -->
+        <div id="g-screen" class="screen hidden">
+            <div class="topic-tag" id="topic-tag">ALGEBRA MOD</div>
+            <div class="box">
+                <div class="q-display" id="q-text">2 + 2 = ?</div>
+                <div class="opt-grid" id="opt-grid"></div>
+            </div>
+            <div style="text-align:center; color:#64748b; font-weight:bold;" id="q-progress">1 / 10</div>
         </div>
     </div>
 
     <script>
-        /* ВСЯ ЛОГИКА ТУТ */
-        let state = { lv: 1, xp: 0, coins: 0, topic: 'algebra', diff: 'easy', current: 0, score: 0 };
-        
-        const engine = {
-            algebra: (d) => {
-                const a = Math.floor(Math.random() * (d==='hard'?50:15)) + 5;
-                const b = Math.floor(Math.random() * 20);
-                return { q: `x + ${a} = ${a+b}`, a: b, opts: [b, b+2, b-1, b+5] };
+        let p = { 
+            lv: 1, xp: 0, coins: 0, 
+            k: parseInt(localStorage.getItem('nk')) || 0, 
+            d: parseInt(localStorage.getItem('nd')) || 0 
+        };
+
+        let session = { current: 0, score: 0, topic: 'algebra' };
+
+        function startSession() {
+            session.topic = document.getElementById('topic-sel').value;
+            session.current = 0; session.score = 0;
+            document.getElementById('topic-tag').innerText = session.topic.toUpperCase();
+            show('g-screen');
+            nextQ();
+        }
+
+        // ГЕНЕРАТОР "НЕ СКУЧНЫХ" ЗАДАЧ
+        const gen = {
+            algebra: () => {
+                const ops = ['+', '-', '*'];
+                const op = ops[Math.floor(Math.random()*ops.length)];
+                let a = Math.floor(Math.random()*20)+1;
+                let b = Math.floor(Math.random()*15)+1;
+                let q, ans;
+                
+                if(op === '*') { a = Math.floor(Math.random()*12); b = Math.floor(Math.random()*10); }
+                
+                // Рандомно делаем задачу со скобками
+                if(Math.random() > 0.7) {
+                    const c = Math.floor(Math.random()*5)+1;
+                    q = `(${a} ${op} ${b}) - ${c}`;
+                    ans = (op==='+'?a+b : op==='-'?a-b : a*b) - c;
+                } else {
+                    q = `${a} ${op} ${b} = ?`;
+                    ans = op==='+'?a+b : op==='-'?a-b : a*b;
+                }
+                return { q, ans, opts: generateOpts(ans) };
             },
-            geometry: (d) => {
-                const w = Math.floor(Math.random() * 10) + 2;
-                const h = Math.floor(Math.random() * 10) + 2;
-                return { q: `S прямоугольника ${w}x${h}`, a: w*h, opts: [w*h, w+h, w*h+2, w*h-2] };
+            geometry: () => {
+                const types = [
+                    {n: 'S квадрата со стор.', f: (s)=>s*s},
+                    {n: 'P прямоуг. со стор.', f: (s)=>s*6}, // упрощенно
+                    {n: 'S треуг. (осн. 4, выс. X)', f: (s)=>2*s}
+                ];
+                const t = types[Math.floor(Math.random()*types.length)];
+                const val = Math.floor(Math.random()*10)+2;
+                const ans = t.f(val);
+                return { q: `${t.n} ${val}`, ans, opts: generateOpts(ans) };
             },
             trig: () => {
-                const tasks = [{q:'sin(90°)', a:1}, {q:'cos(0°)', a:1}, {q:'tg(45°)', a:1}, {q:'sin(30°)', a:0.5}];
-                const p = tasks[Math.floor(Math.random()*tasks.length)];
-                return { q: p.q, a: p.a, opts: [p.a, 0, -1, 0.5] };
+                const t = [{q:'sin(30°)', a:0.5}, {q:'cos(60°)', a:0.5}, {q:'tg(45°)', a:1}, {q:'sin(0)', a:0}];
+                const p = t[Math.floor(Math.random()*t.length)];
+                return { q: p.q, ans: p.a, opts: [p.a, 1, 0, -1] };
             }
         };
 
-        function setDiff(d) {
-            state.diff = d;
-            document.getElementById('d-easy').classList.toggle('active', d==='easy');
-            document.getElementById('d-hard').classList.toggle('active', d==='hard');
+        function generateOpts(correct) {
+            let s = new Set([correct]);
+            while(s.size < 4) s.add(correct + (Math.floor(Math.random()*10)-5));
+            return Array.from(s).sort(()=>Math.random()-0.5);
         }
 
-        function start() {
-            state.topic = document.getElementById('topic').value;
-            state.current = 0; state.score = 0;
-            show('q-screen');
-            next();
-        }
-
-        function next() {
-            if(state.current >= 10) {
-                alert(`Конец! Счет: ${state.score}/10`);
+        function nextQ() {
+            if(session.current >= 10) {
+                alert(`Сессия окончена! Точность: ${session.score * 10}%`);
                 show('m-screen');
                 return;
             }
-            const data = engine[state.topic](state.diff);
+            const data = gen[session.topic]();
             document.getElementById('q-text').innerText = data.q;
-            document.getElementById('q-count').innerText = `Вопрос ${state.current+1}/10`;
-            const div = document.getElementById('options');
-            div.innerHTML = '';
-            data.opts.sort(()=>Math.random()-0.5).forEach(o => {
+            document.getElementById('q-progress').innerText = `${session.current + 1} / 10`;
+            
+            const grid = document.getElementById('opt-grid');
+            grid.innerHTML = '';
+            data.opts.forEach(o => {
                 const b = document.createElement('button');
-                b.className = 'opt';
+                b.className = 'opt-btn';
                 b.innerText = o;
-                b.onclick = () => check(o, data.a, b);
-                div.appendChild(b);
+                b.onclick = () => check(o, data.ans, b);
+                grid.appendChild(b);
             });
         }
 
-        function check(sel, cor, btn) {
-            if(sel === cor) {
+        function check(val, cor, btn) {
+            const all = document.querySelectorAll('.opt-btn');
+            all.forEach(b => b.style.pointerEvents = 'none');
+
+            if(val === cor) {
                 btn.classList.add('correct');
-                state.score++; state.coins += 10; state.xp += 20;
+                p.k++; session.score++; p.xp += 25; p.coins += 5;
             } else {
                 btn.classList.add('wrong');
+                p.d++;
             }
+            
+            localStorage.setItem('nk', p.k);
+            localStorage.setItem('nd', p.d);
+
             setTimeout(() => {
-                state.current++;
+                session.current++;
                 updateUI();
-                next();
-            }, 600);
+                nextQ();
+            }, 700);
         }
 
         function updateUI() {
-            if(state.xp >= 100) { state.lv++; state.xp = 0; }
-            document.getElementById('lvl').innerText = state.lv;
-            document.getElementById('coins').innerText = state.coins;
-            document.getElementById('xp-fill').style.width = state.xp + '%';
+            if(p.xp >= 100) { p.lv++; p.xp = 0; }
+            document.getElementById('lvl').innerText = p.lv;
+            document.getElementById('coins').innerText = p.coins;
+            document.getElementById('xp-fill').style.width = p.xp + '%';
+            
+            document.getElementById('stat-k').innerText = p.k;
+            document.getElementById('stat-d').innerText = p.d;
+            
+            // Расчет K/D
+            const kd = p.d === 0 ? p.k.toFixed(1) : (p.k / p.d).toFixed(1);
+            document.getElementById('stat-kd').innerText = kd;
+
+            // Система рангов
+            const ranks = ["НОВИЧОК", "УЧЕНИК", "СПЕЦ", "МАСТЕР", "ГЕНИЙ", "АРХИТЕКТОР"];
+            const rIdx = Math.min(Math.floor(p.lv / 3), ranks.length - 1);
+            document.getElementById('rank-name').innerText = ranks[rIdx];
         }
 
         function show(id) {
             document.getElementById('m-screen').classList.add('hidden');
-            document.getElementById('q-screen').classList.add('hidden');
+            document.getElementById('g-screen').classList.add('hidden');
             document.getElementById(id).classList.remove('hidden');
         }
+
+        updateUI(); // Инициализация при загрузке
     </script>
 </body>
 </html>
