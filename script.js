@@ -1,22 +1,44 @@
-let state = { lv: 1, xp: 0, coins: 0, currentQ: 0, score: 0, diff: 'easy' };
+let state = { lv: 1, xp: 0, coins: 0, currentQ: 0, score: 0, diff: 'easy', topic: 'algebra' };
 
-// Генератор простых задач для примера
-function generateTask() {
-    const a = Math.floor(Math.random() * 20);
-    const b = Math.floor(Math.random() * 20);
-    const correct = a + b;
-    const options = [correct, correct + 2, correct - 1, correct + 5].sort(() => Math.random() - 0.5);
-    return { q: `${a} + ${b} = ?`, options, correct: options.indexOf(correct) };
-}
+// БАЗА ДАННЫХ ЗАДАЧ ПО ТЕМАМ
+const taskDatabase = {
+    algebra: {
+        easy: () => {
+            const a = Math.floor(Math.random() * 20);
+            const b = Math.floor(Math.random() * 20);
+            return { q: `Решите уравнение: x - ${a} = ${b}`, ans: a + b, options: [a+b, a-b, a+b+2, a+b-5] };
+        },
+        hard: () => {
+            const a = Math.floor(Math.random() * 10) + 2;
+            const b = Math.floor(Math.random() * 20);
+            return { q: `Найдите x: ${a}x + ${b} = ${a*5 + b}`, ans: 5, options: [5, 2, 10, 4] };
+        }
+    },
+    geometry: {
+        easy: () => {
+            const a = Math.floor(Math.random() * 10) + 2;
+            const b = Math.floor(Math.random() * 10) + 2;
+            return { q: `Площадь прямоугольника со сторонами ${a} и ${b} равна:`, ans: a * b, options: [a*b, a+b, (a+b)*2, a*b-1] };
+        },
+        hard: () => {
+            const a = 3; const b = 4;
+            return { q: `В прямоугольном треугольнике катеты 3 и 4. Чему равна гипотенуза?`, ans: 5, options: [5, 6, 7, 12] };
+        }
+    },
+    trig: {
+        easy: () => {
+            return { q: `Чему равен sin(90°)?`, ans: 1, options: [1, 0, 0.5, -1] };
+        },
+        hard: () => {
+            return { q: `Чему равен cos(π)?`, ans: -1, options: [-1, 0, 1, 0.5] };
+        }
+    }
+};
 
 let currentTask = null;
 
-function showSection(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
-    document.getElementById(`section-${id}`).classList.remove('hidden');
-}
-
 function startQuiz() {
+    state.topic = document.getElementById('select-topic').value;
     state.currentQ = 0;
     state.score = 0;
     showSection('quiz');
@@ -28,47 +50,39 @@ function nextQuestion() {
         finishQuiz();
         return;
     }
-    currentTask = generateTask();
+    
+    // Генерируем задачу на основе выбранной темы и сложности
+    const generator = taskDatabase[state.topic][state.diff];
+    const data = generator();
+    
+    currentTask = {
+        q: data.q,
+        options: data.options.sort(() => Math.random() - 0.5),
+        correctValue: data.ans
+    };
+
     document.getElementById('q-text').innerText = currentTask.q;
     document.getElementById('q-progress').innerText = `Вопрос ${state.currentQ + 1}/10`;
+    
     currentTask.options.forEach((opt, i) => {
-        document.getElementById(`opt${i}`).innerText = opt;
+        const btn = document.getElementById(`opt${i}`);
+        btn.innerText = opt;
+        btn.parentElement.onclick = () => checkAnswer(opt);
     });
 }
 
-function checkAnswer(idx) {
-    if (idx === currentTask.correct) {
+function checkAnswer(selectedVal) {
+    if (selectedVal === currentTask.correctValue) {
         state.score++;
-        state.coins += 10;
-        state.xp += 20;
+        state.coins += 15;
+        state.xp += 25;
+        alert("Верно! +15💰");
+    } else {
+        alert(`Ошибка! Правильный ответ: ${currentTask.correctValue}`);
     }
     state.currentQ++;
     updateUI();
     nextQuestion();
 }
 
-function finishQuiz() {
-    alert(`Тест окончен! Твой результат: ${state.score}/10. Получено монет: ${state.score * 10}`);
-    showSection('menu');
-}
-
-function clickSphere() {
-    state.coins += 1;
-    updateUI();
-}
-
-function updateUI() {
-    if (state.xp >= 100) { state.lv++; state.xp = 0; alert("LEVEL UP!"); }
-    document.getElementById('user-level').innerText = `LVL ${state.lv}`;
-    document.getElementById('user-coins').innerText = `💰 ${state.coins}`;
-    document.getElementById('xp-bar-fill').style.width = `${state.xp}%`;
-}
-
-// Переключение сложности
-document.querySelectorAll('.diff-btn').forEach(btn => {
-    btn.onclick = () => {
-        document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        state.diff = btn.dataset.diff;
-    };
-});
+// Остальные функции (showSection, updateUI, clickSphere) оставь без изменений
