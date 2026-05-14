@@ -3,64 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus Math AI | Competitive Edition</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <title>Nexus Math AI | Ultra Edition</title>
+    <style>
+        /* ВЕСЬ ДИЗАЙН ТУТ */
+        :root { --p: #7c3aed; --bg: #050505; --card: #121214; --text: #fafafa; }
+        body { margin: 0; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; display: flex; justify-content: center; min-height: 100vh; }
+        .app { width: 100%; max-width: 450px; padding: 20px; display: flex; flex-direction: column; }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; background: var(--card); padding: 15px; border-radius: 16px; border: 1px solid #222; margin-bottom: 20px; }
+        .xp-bar { width: 100px; height: 8px; background: #222; border-radius: 4px; overflow: hidden; margin-top: 5px; }
+        #xp-fill { height: 100%; background: var(--p); width: 0%; transition: 0.5s; }
+        
+        .screen { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 20px; }
+        .hidden { display: none; }
+        
+        h1 { font-size: 32px; text-align: center; color: var(--p); text-shadow: 0 0 20px rgba(124, 58, 237, 0.3); }
+        .box { background: var(--card); border: 1px solid #222; padding: 20px; border-radius: 20px; }
+        
+        select, .btn { width: 100%; padding: 15px; border-radius: 12px; border: none; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; box-sizing: border-box; }
+        select { background: #1a1a1d; color: white; margin-bottom: 15px; border: 1px solid #333; }
+        
+        .btn { background: var(--p); color: white; margin-bottom: 10px; }
+        .btn:active { transform: scale(0.98); }
+        .diff-row { display: flex; gap: 10px; margin-bottom: 15px; }
+        .d-btn { flex: 1; background: #1a1a1d; color: #666; border: 1px solid #333; padding: 10px; border-radius: 8px; }
+        .d-btn.active { background: var(--p); color: white; border-color: var(--p); }
+
+        .q-box { min-height: 120px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; text-align: center; }
+        .opt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .opt { background: #1a1a1d; border: 1px solid #333; color: white; padding: 20px; border-radius: 12px; cursor: pointer; }
+        .opt.correct { background: #166534; border-color: #22c55e; }
+        .opt.wrong { background: #991b1b; border-color: #ef4444; }
+    </style>
 </head>
 <body>
-    <div class="app-container">
-        <!-- Статус-бар (Профиль) -->
-        <div class="top-nav">
-            <div class="profile-card">
-                <div class="avatar">🎓</div>
-                <div class="stats">
-                    <div class="user-name">STUDENT_NEXUS</div>
-                    <div class="xp-container">
-                        <div id="xp-fill" style="width: 30%"></div>
-                    </div>
-                </div>
-                <div class="level-badge">LVL <span id="lvl">1</span></div>
+    <div class="app">
+        <div class="header">
+            <div>
+                <div style="font-weight: bold;">LVL <span id="lvl">1</span></div>
+                <div class="xp-bar"><div id="xp-fill"></div></div>
             </div>
-            <div class="currency">💰 <span id="coins">0</span></div>
+            <div style="font-size: 20px;">💰 <span id="coins">0</span></div>
         </div>
 
-        <!-- Основной контент -->
-        <div id="screen-menu" class="screen">
-            <h1 class="glitch">NEXUS MATH</h1>
-            <div class="config-grid">
-                <div class="config-item">
-                    <label>Предмет</label>
-                    <select id="topic-select">
-                        <option value="algebra">Алгебра (Уравнения)</option>
-                        <option value="geometry">Геометрия (Площади)</option>
-                        <option value="trig">Тригонометрия (Функции)</option>
-                    </select>
+        <!-- ГЛАВНОЕ МЕНЮ -->
+        <div id="m-screen" class="screen">
+            <h1>NEXUS MATH</h1>
+            <div class="box">
+                <label style="display:block; margin-bottom:10px; color:#888;">Выберите тему:</label>
+                <select id="topic">
+                    <option value="algebra">Алгебра</option>
+                    <option value="geometry">Геометрия</option>
+                    <option value="trig">Тригонометрия</option>
+                </select>
+                <div class="diff-row">
+                    <button class="d-btn active" id="d-easy" onclick="setDiff('easy')">Легко</button>
+                    <button class="d-btn" id="d-hard" onclick="setDiff('hard')">Сложно</button>
                 </div>
-                <div class="config-item">
-                    <label>Сложность</label>
-                    <div class="diff-toggle">
-                        <button class="d-btn active" data-v="easy">Новичок</button>
-                        <button class="d-btn" data-v="hard">Профи</button>
-                    </div>
-                </div>
+                <button class="btn" style="background:#fff; color:#000;" onclick="start()">НАЧАТЬ ТЕСТ</button>
             </div>
-            <button class="main-start-btn" onclick="startEngine()">ЗАПУСК ТЕСТА</button>
         </div>
 
-        <!-- Экран Теста -->
-        <div id="screen-quiz" class="screen hidden">
-            <div class="quiz-status">
-                <div id="q-num">Вопрос 1/10</div>
-                <div id="timer-bar"></div>
-            </div>
-            <div class="question-box">
-                <div id="math-display"></div>
-            </div>
-            <div class="answers-grid" id="options">
-                <!-- Кнопки генерируются скриптом -->
-            </div>
+        <!-- ТЕСТ -->
+        <div id="q-screen" class="screen hidden">
+            <div style="text-align:center; color:#888;" id="q-count">Вопрос 1/10</div>
+            <div class="box q-box" id="q-text">?</div>
+            <div class="opt-grid" id="options"></div>
         </div>
     </div>
-    <script src="script.js"></script>
+
+    <script>
+        /* ВСЯ ЛОГИКА ТУТ */
+        let state = { lv: 1, xp: 0, coins: 0, topic: 'algebra', diff: 'easy', current: 0, score: 0 };
+        
+        const engine = {
+            algebra: (d) => {
+                const a = Math.floor(Math.random() * (d==='hard'?50:15)) + 5;
+                const b = Math.floor(Math.random() * 20);
+                return { q: `x + ${a} = ${a+b}`, a: b, opts: [b, b+2, b-1, b+5] };
+            },
+            geometry: (d) => {
+                const w = Math.floor(Math.random() * 10) + 2;
+                const h = Math.floor(Math.random() * 10) + 2;
+                return { q: `S прямоугольника ${w}x${h}`, a: w*h, opts: [w*h, w+h, w*h+2, w*h-2] };
+            },
+            trig: () => {
+                const tasks = [{q:'sin(90°)', a:1}, {q:'cos(0°)', a:1}, {q:'tg(45°)', a:1}, {q:'sin(30°)', a:0.5}];
+                const p = tasks[Math.floor(Math.random()*tasks.length)];
+                return { q: p.q, a: p.a, opts: [p.a, 0, -1, 0.5] };
+            }
+        };
+
+        function setDiff(d) {
+            state.diff = d;
+            document.getElementById('d-easy').classList.toggle('active', d==='easy');
+            document.getElementById('d-hard').classList.toggle('active', d==='hard');
+        }
+
+        function start() {
+            state.topic = document.getElementById('topic').value;
+            state.current = 0; state.score = 0;
+            show('q-screen');
+            next();
+        }
+
+        function next() {
+            if(state.current >= 10) {
+                alert(`Конец! Счет: ${state.score}/10`);
+                show('m-screen');
+                return;
+            }
+            const data = engine[state.topic](state.diff);
+            document.getElementById('q-text').innerText = data.q;
+            document.getElementById('q-count').innerText = `Вопрос ${state.current+1}/10`;
+            const div = document.getElementById('options');
+            div.innerHTML = '';
+            data.opts.sort(()=>Math.random()-0.5).forEach(o => {
+                const b = document.createElement('button');
+                b.className = 'opt';
+                b.innerText = o;
+                b.onclick = () => check(o, data.a, b);
+                div.appendChild(b);
+            });
+        }
+
+        function check(sel, cor, btn) {
+            if(sel === cor) {
+                btn.classList.add('correct');
+                state.score++; state.coins += 10; state.xp += 20;
+            } else {
+                btn.classList.add('wrong');
+            }
+            setTimeout(() => {
+                state.current++;
+                updateUI();
+                next();
+            }, 600);
+        }
+
+        function updateUI() {
+            if(state.xp >= 100) { state.lv++; state.xp = 0; }
+            document.getElementById('lvl').innerText = state.lv;
+            document.getElementById('coins').innerText = state.coins;
+            document.getElementById('xp-fill').style.width = state.xp + '%';
+        }
+
+        function show(id) {
+            document.getElementById('m-screen').classList.add('hidden');
+            document.getElementById('q-screen').classList.add('hidden');
+            document.getElementById(id).classList.remove('hidden');
+        }
+    </script>
 </body>
 </html>
